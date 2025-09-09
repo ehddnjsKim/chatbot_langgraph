@@ -6,34 +6,34 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langchain_openai import ChatOpenAI
 
-# ========= 1. 환경 변수 불러오기 =========
+# 1. 환경 변수 불러오기
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 읽기
 api_key = os.environ.get("OPENAI_API_KEY")
 if not api_key:
     print("OPENAI_API_KEY not found! Please set it in your .env file.")
     sys.exit(1)
 
-# ========= 2. State 정의 =========
+# 2. State 정의 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
-# ========= 3. LLM 초기화 =========
+# 3. LLM 초기화 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-# ========= 4. chatbot 노드 =========
+# 4. chatbot 노드 
 def chatbot(state: State):
     # LLM 호출하여 응답 생성
     response = llm.invoke(state["messages"])
     return {"messages": [response]}
 
-# ========= 5. Graph 구성 =========
+# 5. Graph 구성 
 graph_builder = StateGraph(State)
 graph_builder.add_node("chatbot", chatbot)
 graph_builder.add_edge(START, "chatbot")
 graph_builder.add_edge("chatbot", END)
 graph = graph_builder.compile()
 
-# ========= 6. 실행 함수 =========
+# 6. 실행 함수 
 def run_chatbot():
     print("Chatbot started! Type 'quit', 'exit', or 'q' to stop.")
 
